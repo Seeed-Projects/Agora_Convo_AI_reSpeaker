@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central City Mall - Voice AI Assistant with Emotions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            position: relative;
+        }
+
+        /* Animated Background */
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .city-silhouette {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 30%;
+            background: linear-gradient(to top, rgba(15, 32, 39, 0.8), transparent);
+        }
+
+        .building {
+            position: absolute;
+            bottom: 0;
+            background: linear-gradient(to top, rgba(0, 150, 255, 0.1), rgba(0, 200, 255, 0.05));
+            border-top: 2px solid rgba(0, 255, 255, 0.3);
+            box-shadow: 0 0 20px rgba(0, 200, 255, 0.2);
+        }
+
+        .building-1 { left: 5%; width: 80px; height: 150px; animation: buildingGlow 4s infinite; }
+        .building-2 { left: 15%; width: 100px; height: 200px; animation: buildingGlow 5s infinite 1s; }
+        .building-3 { left: 30%; width: 70px; height: 180px; animation: buildingGlow 4.5s infinite 0.5s; }
+        .building-4 { left: 45%; width: 120px; height: 220px; animation: buildingGlow 5.5s infinite 1.5s; }
+        .building-5 { left: 60%; width: 90px; height: 170px; animation: buildingGlow 4s infinite 2s; }
+        .building-6 { left: 75%; width: 110px; height: 190px; animation: buildingGlow 5s infinite 0.8s; }
+        .building-7 { right: 5%; width: 85px; height: 160px; animation: buildingGlow 4.2s infinite 1.2s; }
+
+        @keyframes buildingGlow {
+            0%, 100% { opacity: 0.5; box-shadow: 0 0 20px rgba(0, 200, 255, 0.2); }
+            50% { opacity: 0.8; box-shadow: 0 0 40px rgba(0, 255, 255, 0.4); }
+        }
+
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: rgba(0, 255, 255, 0.5);
+            border-radius: 50%;
+            animation: float 15s infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) translateX(100px); opacity: 0; }
+        }
+
+        /* Emotion Display at Top */
+        .emotion-display {
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1500;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .emotion-display.active {
+            opacity: 1;
+            animation: emotionPulse 0.6s ease-out;
+        }
+
+        .emotion-emoji {
+            font-size: 120px;
+            filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.5));
+            animation: emotionFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes emotionPulse {
+            0% { transform: translateX(-50%) scale(0); }
+            50% { transform: translateX(-50%) scale(1.2); }
+            100% { transform: translateX(-50%) scale(1); }
+        }
+
+        @keyframes emotionFloat {
+            0%, 100% { transform: translateY(0) rotate(-5deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+        }
+
+        .emotion-label {
+            text-align: center;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px 20px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Top Bar */
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            z-index: 1000;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #00d4ff, #0096ff);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 15px rgba(0, 200, 255, 0.4);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            letter-spacing: 0.5px;
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #00d4ff, #0096ff);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 200, 255, 0.3);
+        }
+
+        .btn-start:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(0, 200, 255, 0.5);
+        }
+
+        .btn-stop {
+            background: rgba(255, 80, 80, 0.2);
+            color: #ff5050;
+            border: 1px solid rgba(255, 80, 80, 0.3);
+        }
+
+        .btn-stop:hover:not(:disabled) {
+            background: rgba(255, 80, 80, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-config, .btn-transcripts {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-config:hover, .btn-transcripts:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* Main Content */
+        .main-content {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+            padding: 100px 20px 120px;
+        }
+
+        .ai-presence {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin-bottom: 40px;
+        }
+
+        .ai-orb {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.3), transparent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.5s ease;
+        }
+
+        .ai-orb.listening {
+            animation: pulse 2s infinite;
+            background: radial-gradient(circle, rgba(0, 255, 200, 0.4), transparent);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+            50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+        }
+
+        .microphone-icon {
+            font-size: 80px;
+            color: rgba(0, 212, 255, 0.8);
+            transition: all 0.3s ease;
+        }
+
+        .ai-orb.listening .microphone-icon {
+            color: rgba(0, 255, 200, 1);
+            animation: float-icon 3s infinite;
+        }
+
+        @keyframes float-icon {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .ripple {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            border: 2px solid rgba(0, 212, 255, 0.4);
+            border-radius: 50%;
+            animation: ripple 2s infinite;
+        }
+
+        .ripple:nth-child(2) { animation-delay: 0.5s; }
+        .ripple:nth-child(3) { animation-delay: 1s; }
+
+        @keyframes ripple {
+            0% { width: 200px; height: 200px; opacity: 1; }
+            100% { width: 400px; height: 400px; opacity: 0; }
+        }
+
+        .status-text {
+            font-size: 28px;
+            color: white;
+            text-align: center;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.6);
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        /* Configuration Panel */
+        .config-panel {
+            position: fixed;
+            top: 80px;
+            right: -450px;
+            width: 400px;
+            height: calc(100vh - 80px);
+            background: rgba(20, 30, 40, 0.95);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 999;
+            overflow-y: auto;
+            padding: 30px;
+        }
+
+        .config-panel.active {
+            right: 0;
+        }
+
+        /* Transcripts Panel */
+        .transcripts-panel {
+            position: fixed;
+            top: 80px;
+            left: -500px;
+            width: 450px;
+            height: calc(100vh - 80px);
+            background: rgba(20, 30, 40, 0.95);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .transcripts-panel.active {
+            left: 0;
+        }
+
+        .panel-header {
+            padding: 30px 30px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .panel-title {
+            color: white;
+            font-size: 24px;
+            margin-bottom: 10px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-subtitle {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 13px;
+            letter-spacing: 0.5px;
+        }
+
+        .transcripts-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 30px;
+        }
+
+        .transcript-item {
+            margin-bottom: 20px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .transcript-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .transcript-role {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 4px 12px;
+            border-radius: 12px;
+        }
+
+        .transcript-role.user {
+            background: rgba(0, 212, 255, 0.2);
+            color: #00d4ff;
+        }
+
+        .transcript-role.assistant {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+        }
+
+        .transcript-time {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.4);
+            font-family: monospace;
+        }
+
+        .transcript-emotion {
+            font-size: 11px;
+            background: rgba(255, 200, 0, 0.2);
+            color: #ffc800;
+            padding: 2px 8px;
+            border-radius: 8px;
+            margin-left: auto;
+        }
+
+        .transcript-text {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            line-height: 1.6;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border-left: 3px solid rgba(0, 212, 255, 0.3);
+        }
+
+        .transcript-item.assistant .transcript-text {
+            border-left-color: rgba(0, 255, 136, 0.3);
+        }
+
+        .transcript-empty {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.3);
+            padding: 60px 20px;
+            font-size: 14px;
+        }
+
+        .config-title {
+            color: white;
+            font-size: 24px;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        .config-group {
+            margin-bottom: 25px;
+        }
+
+        .config-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .config-input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: white;
+            font-family: monospace;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+
+        .config-input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(0, 212, 255, 0.5);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 10px;
+            z-index: 2000;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideUp 0.4s ease-out;
+            min-width: 300px;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .toast-icon {
+            font-size: 20px;
+        }
+
+        .toast-message {
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+
+        .toast.info { border-left: 3px solid #00d4ff; }
+        .toast.success { border-left: 3px solid #00ff88; }
+        .toast.error { border-left: 3px solid #ff5050; }
+
+        /* Clear Button */
+        .clear-transcripts-btn {
+            margin: 0 30px 20px;
+            padding: 10px 20px;
+            background: rgba(255, 80, 80, 0.2);
+            color: #ff5050;
+            border: 1px solid rgba(255, 80, 80, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .clear-transcripts-btn:hover {
+            background: rgba(255, 80, 80, 0.3);
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="background">
+        <div class="city-silhouette">
+            <div class="building building-1"></div>
+            <div class="building building-2"></div>
+            <div class="building building-3"></div>
+            <div class="building building-4"></div>
+            <div class="building building-5"></div>
+            <div class="building building-6"></div>
+            <div class="building building-7"></div>
+        </div>
+        <div class="particles" id="particles"></div>
+    </div>
+
+    <!-- Emotion Display -->
+    <div class="emotion-display" id="emotionDisplay">
+        <div class="emotion-emoji" id="emotionEmoji">😊</div>
+        <div class="emotion-label" id="emotionLabel">Happy</div>
+    </div>
+
+    <!-- Top Navigation Bar -->
+    <div class="top-bar">
+        <div class="logo">
+            <div class="logo-icon">🏢</div>
+            <span>Central City Mall AI</span>
+        </div>
+        <div class="nav-buttons">
+            <button class="nav-btn btn-start" id="startBtn">▶ Start Conversation</button>
+            <button class="nav-btn btn-stop" id="stopBtn" disabled>⏹ Stop Conversation</button>
+            <button class="nav-btn btn-transcripts" id="transcriptsBtn">📝 Transcripts</button>
+            <button class="nav-btn btn-config" id="configBtn">⚙ Configuration</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="ai-presence">
+            <div class="ai-orb" id="aiOrb">
+                <div class="ripple"></div>
+                <div class="ripple"></div>
+                <div class="ripple"></div>
+                <div class="microphone-icon">🎙️</div>
+            </div>
+        </div>
+        <div class="status-text" id="statusText">Ready to Assist</div>
+        <div class="subtitle">Your intelligent mall guide is ready</div>
+    </div>
+
+    <!-- Transcripts Panel -->
+    <div class="transcripts-panel" id="transcriptsPanel">
+        <div class="panel-header">
+            <div class="panel-title">
+                <span>📝</span>
+                <span>Live Transcripts</span>
+            </div>
+            <div class="panel-subtitle">Real-time conversation with emotions</div>
+        </div>
+        <div class="transcripts-container" id="transcriptsContainer">
+            <div class="transcript-empty">No transcripts yet. Start a conversation to see them here.</div>
+        </div>
+        <button class="clear-transcripts-btn" id="clearTranscriptsBtn">🗑️ Clear Transcripts</button>
+    </div>
+
+    <!-- Configuration Panel -->
+    <div class="config-panel" id="configPanel">
+        <div class="config-title">⚙ Configuration</div>
+
+        <div class="config-group">
+            <label class="config-label">App ID</label>
+            <input type="text" class="config-input" id="appId" value="550749b706214846a1a2eef3612a8cd3">
+        </div>
+
+        <div class="config-group">
+            <label class="config-label">Channel Name</label>
+            <input type="text" class="config-input" id="channel" value="test">
+        </div>
+
+        <div class="config-group">
+            <label class="config-label">User UID</label>
+            <input type="text" class="config-input" id="userUid" value="1002">
+        </div>
+
+        <div class="config-group">
+            <label class="config-label">Token</label>
+            <input type="text" class="config-input" id="token" value="007eJxTYJj6sdD/Qn3N4rXlwj/XzzxxVPZDzYnEr2bpf9MMbJoqKrgUGExNDcxNLJPMDcyMDE0sTMwSDRONUlPTjM0MjRItklOM/W97ZArwMTAIewsxMzEwMrAAMYjPBCaZwSQLlCxJLS5hYTA0MDACqWSEioL4AAZDIBw=">
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Agora SDK -->
+    <script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.20.0.js"></script>
+    <script src="./agora-rtm-2.2.3.min.js"></script>
+
+    <script>
+        // Emotion mapping configuration
+        const EMOTION_CONFIG = {
+            happy: { emoji: '😊', label: 'Happy', keywords: ['special offer', 'discount', 'sale', 'great', 'wonderful', 'excellent', 'amazing', 'fantastic', 'perfect', 'love', 'enjoy'] },
+            excited: { emoji: '🎉', label: 'Excited', keywords: ['exciting', 'wow', 'incredible', 'awesome', 'celebration', 'congratulations'] },
+            surprised: { emoji: '😲', label: 'Surprised', keywords: ['surprise', 'unexpected', 'amazing', 'wow', 'believe', 'incredible'] },
+            thinking: { emoji: '🤔', label: 'Thinking', keywords: ['let me', 'checking', 'look up', 'finding', 'searching', 'moment'] },
+            helpful: { emoji: '🙋', label: 'Helpful', keywords: ['help', 'assist', 'guide', 'show', 'direct', 'located'] },
+            neutral: { emoji: '😐', label: 'Neutral', keywords: ['located', 'floor', 'available', 'open', 'hours'] },
+            sad: { emoji: '😔', label: 'Sad', keywords: ['sorry', 'unfortunately', 'closed', 'unavailable', 'apologize'] },
+            welcoming: { emoji: '👋', label: 'Welcome', keywords: ['hello', 'welcome', 'hi', 'greetings', 'good morning', 'good afternoon'] }
+        };
+
+        // Sentiment analysis function
+        function analyzeSentiment(text) {
+            if (!text) return null;
+
+            const lowerText = text.toLowerCase();
+            let bestMatch = { emotion: 'neutral', score: 0 };
+
+            // Check each emotion for keyword matches
+            for (const [emotion, config] of Object.entries(EMOTION_CONFIG)) {
+                let score = 0;
+                for (const keyword of config.keywords) {
+                    if (lowerText.includes(keyword)) {
+                        score += 1;
+                    }
+                }
+
+                if (score > bestMatch.score) {
+                    bestMatch = { emotion, score };
+                }
+            }
+
+            // If no keywords matched, analyze text patterns
+            if (bestMatch.score === 0) {
+                if (lowerText.includes('!')) bestMatch.emotion = 'excited';
+                else if (lowerText.includes('?')) bestMatch.emotion = 'thinking';
+            }
+
+            return bestMatch.emotion;
+        }
+
+        // Display emotion on screen
+        function displayEmotion(emotion) {
+            const emotionDisplay = document.getElementById('emotionDisplay');
+            const emotionEmoji = document.getElementById('emotionEmoji');
+            const emotionLabel = document.getElementById('emotionLabel');
+
+            const config = EMOTION_CONFIG[emotion] || EMOTION_CONFIG.neutral;
+
+            emotionEmoji.textContent = config.emoji;
+            emotionLabel.textContent = config.label;
+
+            // Show emotion
+            emotionDisplay.classList.remove('active');
+            setTimeout(() => {
+                emotionDisplay.classList.add('active');
+            }, 50);
+
+            // Hide after 4 seconds
+            setTimeout(() => {
+                emotionDisplay.classList.remove('active');
+            }, 4000);
+
+            console.log(`🎭 Emotion detected: ${emotion} (${config.label})`);
+
+            // Send emotion to LED control service
+            sendEmotionToLED(emotion);
+        }
+
+        // Send emotion to LED control service
+        async function sendEmotionToLED(emotion) {
+            try {
+                const response = await fetch('http://localhost:5000/emotion', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        emotion: emotion,
+                        duration: 1.0
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log(`💡 LED animation triggered: ${data.message}`);
+                } else {
+                    console.log('⚠️ LED service not available');
+                }
+            } catch (error) {
+                // Silently fail if LED service is not running
+                console.log('💡 LED service offline (optional)');
+            }
+        }
+
+        // Extract clean text (remove emotion labels in brackets)
+        function extractCleanText(text) {
+            // Remove content in brackets: (emotion), [emotion], {emotion}, （emotion）, 【emotion】
+            return text
+                .replace(/\([^)]*\)/g, '')
+                .replace(/\[[^\]]*\]/g, '')
+                .replace(/\{[^}]*\}/g, '')
+                .replace(/（[^）]*）/g, '')
+                .replace(/【[^】]*】/g, '')
+                .trim();
+        }
+
+        // Extract emotion from bracketed labels
+        function extractEmotionLabel(text) {
+            const patterns = [
+                /\(([^)]+)\)/,    // (emotion)
+                /\[([^\]]+)\]/,   // [emotion]
+                /\{([^}]+)\}/,    // {emotion}
+                /（([^）]+)）/,    // （emotion）
+                /【([^】]+)】/     // 【emotion】
+            ];
+
+            for (const pattern of patterns) {
+                const match = text.match(pattern);
+                if (match) {
+                    const label = match[1].toLowerCase().trim();
+                    // Check if it matches our emotion keywords
+                    for (const [emotion, config] of Object.entries(EMOTION_CONFIG)) {
+                        if (label.includes(emotion) || config.keywords.some(k => label.includes(k))) {
+                            return emotion;
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+        // Generate floating particles
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 30; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 15 + 's';
+            particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+            particlesContainer.appendChild(particle);
+        }
+
+        // Toast notification system
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+
+            const icons = {
+                info: 'ℹ️',
+                success: '✅',
+                error: '❌'
+            };
+
+            toast.innerHTML = `
+                <span class="toast-icon">${icons[type]}</span>
+                <span class="toast-message">${message}</span>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'slideUp 0.4s ease-out reverse';
+                setTimeout(() => toast.remove(), 400);
+            }, 3000);
+        }
+
+        // Panel toggles
+        const configBtn = document.getElementById('configBtn');
+        const configPanel = document.getElementById('configPanel');
+        const transcriptsBtn = document.getElementById('transcriptsBtn');
+        const transcriptsPanel = document.getElementById('transcriptsPanel');
+
+        configBtn.addEventListener('click', () => {
+            configPanel.classList.toggle('active');
+            if (transcriptsPanel.classList.contains('active')) {
+                transcriptsPanel.classList.remove('active');
+            }
+        });
+
+        transcriptsBtn.addEventListener('click', () => {
+            transcriptsPanel.classList.toggle('active');
+            if (configPanel.classList.contains('active')) {
+                configPanel.classList.remove('active');
+            }
+        });
+
+        // Transcript Management
+        const transcriptsContainer = document.getElementById('transcriptsContainer');
+        const clearTranscriptsBtn = document.getElementById('clearTranscriptsBtn');
+
+        function addTranscript(role, text, emotion = null, timestamp = null) {
+            // Remove empty state
+            const emptyState = transcriptsContainer.querySelector('.transcript-empty');
+            if (emptyState) {
+                emptyState.remove();
+            }
+
+            const time = timestamp || new Date().toLocaleTimeString();
+            const cleanText = extractCleanText(text);
+
+            const transcriptItem = document.createElement('div');
+            transcriptItem.className = `transcript-item ${role}`;
+
+            const emotionBadge = emotion ? `<span class="transcript-emotion">${EMOTION_CONFIG[emotion]?.emoji || ''} ${emotion}</span>` : '';
+
+            transcriptItem.innerHTML = `
+                <div class="transcript-header">
+                    <span class="transcript-role ${role}">${role === 'user' ? '👤 You' : '🤖 Assistant'}</span>
+                    <span class="transcript-time">${time}</span>
+                    ${emotionBadge}
+                </div>
+                <div class="transcript-text">${cleanText}</div>
+            `;
+
+            transcriptsContainer.appendChild(transcriptItem);
+            transcriptsContainer.scrollTop = transcriptsContainer.scrollHeight;
+
+            // Also log to console
+            console.log(`[${time}] ${role.toUpperCase()}${emotion ? ` [${emotion}]` : ''}: ${cleanText}`);
+        }
+
+        clearTranscriptsBtn.addEventListener('click', () => {
+            transcriptsContainer.innerHTML = '<div class="transcript-empty">No transcripts yet. Start a conversation to see them here.</div>';
+            showToast('Transcripts cleared', 'info');
+        });
+
+        // Agora integration
+        (function() {
+            let checkCount = 0;
+            const maxChecks = 50;
+
+            function checkAgoraLoaded() {
+                checkCount++;
+                if (typeof AgoraRTC !== 'undefined' && typeof AgoraRTM !== 'undefined') {
+                    showToast('Agora SDKs loaded successfully', 'success');
+                    initApp();
+                } else if (checkCount < maxChecks) {
+                    setTimeout(checkAgoraLoaded, 100);
+                } else {
+                    showToast('Failed to load Agora SDKs', 'error');
+                }
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', checkAgoraLoaded);
+            } else {
+                checkAgoraLoaded();
+            }
+        })();
+
+        function initApp() {
+            let client = null;
+            let localAudioTrack = null;
+            let rtmClient = null;
+            let rtmChannel = null;
+            let isConnected = false;
+
+            const startBtn = document.getElementById('startBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            const statusText = document.getElementById('statusText');
+            const aiOrb = document.getElementById('aiOrb');
+
+            const appIdInput = document.getElementById('appId');
+            const channelInput = document.getElementById('channel');
+            const tokenInput = document.getElementById('token');
+            const userUidInput = document.getElementById('userUid');
+
+            function getConfig() {
+                return {
+                    appId: appIdInput.value.trim(),
+                    channel: channelInput.value.trim(),
+                    token: tokenInput.value.trim(),
+                    userUid: userUidInput.value.trim()
+                };
+            }
+
+            // Track last message to prevent duplicates
+            let lastTranscriptText = '';
+            let transcriptDebounceTimer = null;
+
+            async function setupRTM(config) {
+                try {
+                    console.log('🔌 Setting up RTM for transcripts...');
+
+                    // Create RTM client
+                    rtmClient = new AgoraRTM.RTM(config.appId, config.userUid, {
+                        token: config.token
+                    });
+
+                    // Login to RTM
+                    await rtmClient.login({token:"xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"});
+                    console.log('✅ RTM login successful');
+                    showToast('Connected to transcript service', 'success');
+
+                    // Subscribe to channel
+                    rtmChannel = await rtmClient.subscribe(config.channel);
+                    console.log(`✅ Subscribed to RTM channel: ${config.channel}`);
+
+                    // Listen for transcript messages
+                    rtmClient.addEventListener('message', (event) => {
+                        console.log('📨 RTM Message received:', event);
+
+                        if (event.channelName === config.channel) {
+                            try {
+                                // Handle both string and object message formats
+                                let message;
+                                if (typeof event.message === 'string') {
+                                    message = JSON.parse(event.message);
+                                } else {
+                                    message = event.message;
+                                }
+
+                                console.log('📝 Parsed transcript:', message);
+
+                                // Check if it's an assistant transcription message
+                                if (message.object === 'assistant.transcription' && message.text) {
+                                    const text = message.text;
+                                    const dataType = message.data_type;
+
+                                    console.log(`📝 Transcript received - Type: ${dataType}, Text: "${text}"`);
+
+                                    // Skip if this is just an incremental update (ends with ., .., or ...)
+                                    // and is very similar to the last message
+                                    if (lastTranscriptText && text.startsWith(lastTranscriptText.replace(/\.+$/, ''))) {
+                                        console.log('⏭️ Skipping incremental update');
+                                        lastTranscriptText = text;
+
+                                        // Clear previous timer
+                                        if (transcriptDebounceTimer) {
+                                            clearTimeout(transcriptDebounceTimer);
+                                        }
+
+                                        // Set new timer to show final message after 1 second of no updates
+                                        transcriptDebounceTimer = setTimeout(() => {
+                                            processTranscript(text);
+                                        }, 1000);
+
+                                        return;
+                                    }
+
+                                    // Clear any pending timer
+                                    if (transcriptDebounceTimer) {
+                                        clearTimeout(transcriptDebounceTimer);
+                                        transcriptDebounceTimer = null;
+                                    }
+
+                                    // Process new/complete transcript immediately
+                                    lastTranscriptText = text;
+                                    processTranscript(text);
+                                }
+                                // Handle other message types if needed
+                                else if (message.type === 'transcripts') {
+                                    console.log('📝 Alternative transcript format:', message);
+                                }
+                            } catch (error) {
+                                console.error('❌ Error parsing transcript:', error);
+                                console.error('Raw message:', event.message);
+                            }
+                        }
+                    });
+
+                    // Helper function to process transcript
+                    function processTranscript(text) {
+                        // Extract emotion from label if present
+                        let detectedEmotion = extractEmotionLabel(text);
+
+                        // If no label, analyze sentiment
+                        if (!detectedEmotion) {
+                            detectedEmotion = analyzeSentiment(text);
+                        }
+
+                        console.log(`🎭 Detected emotion: ${detectedEmotion}`);
+
+                        // Display emotion at top of screen
+                        if (detectedEmotion) {
+                            displayEmotion(detectedEmotion);
+                        }
+
+                        // Add to transcript panel
+                        const role = 'assistant';
+                        addTranscript(role, text, detectedEmotion);
+                    }
+
+                    // Listen for connection status
+                    rtmClient.addEventListener('status', (event) => {
+                        console.log('🔄 RTM Status:', event);
+                    });
+
+                } catch (error) {
+                    console.error('❌ RTM setup error:', error);
+                    showToast('Transcript service error: ' + error.message, 'error');
+                }
+            }
+
+            async function joinChannel() {
+                try {
+                    const config = getConfig();
+
+                    statusText.textContent = 'Connecting...';
+                    showToast('Initializing voice connection', 'info');
+
+                    // Setup RTC
+                    client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+
+                    client.on("user-published", async (user, mediaType) => {
+                        showToast(`AI Agent connected (UID: ${user.uid})`, 'info');
+                        await client.subscribe(user, mediaType);
+
+                        if (mediaType === "audio") {
+                            user.audioTrack.play();
+                            showToast('Receiving AI response', 'success');
+                        }
+                    });
+
+                    client.on("user-joined", (user) => {
+                        showToast(`User ${user.uid} joined`, 'info');
+                    });
+
+                    await client.join(config.appId, config.channel, config.token, parseInt(config.userUid));
+                    showToast('Channel joined successfully', 'success');
+
+                    localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+                    await client.publish([localAudioTrack]);
+
+                    // Setup RTM for transcripts
+                    await setupRTM(config);
+
+                    showToast('Microphone active - Start speaking', 'success');
+
+                    isConnected = true;
+                    statusText.textContent = 'Listening...';
+                    aiOrb.classList.add('listening');
+                    startBtn.disabled = true;
+                    stopBtn.disabled = false;
+
+                } catch (error) {
+                    showToast(`Connection failed: ${error.message}`, 'error');
+                    console.error('Connection error:', error);
+                    statusText.textContent = 'Connection Failed';
+                    startBtn.disabled = false;
+                }
+            }
+
+            async function leaveChannel() {
+                try {
+                    showToast('Disconnecting...', 'info');
+
+                    // Cleanup RTM
+                    if (rtmChannel) {
+                        await rtmClient.unsubscribe(channelInput.value.trim());
+                        rtmChannel = null;
+                    }
+
+                    if (rtmClient) {
+                        await rtmClient.logout();
+                        rtmClient = null;
+                    }
+
+                    // Cleanup RTC
+                    if (localAudioTrack) {
+                        localAudioTrack.close();
+                        localAudioTrack = null;
+                    }
+
+                    if (client) {
+                        await client.leave();
+                        client = null;
+                    }
+
+                    isConnected = false;
+                    statusText.textContent = 'Ready to Assist';
+                    aiOrb.classList.remove('listening');
+                    startBtn.disabled = false;
+                    stopBtn.disabled = true;
+
+                    showToast('Disconnected successfully', 'success');
+
+                } catch (error) {
+                    showToast(`Error: ${error.message}`, 'error');
+                    console.error('Disconnect error:', error);
+                }
+            }
+
+            startBtn.addEventListener('click', () => {
+                startBtn.disabled = true;
+                showToast('Make sure join_api.py is running', 'info');
+                joinChannel();
+            });
+
+            stopBtn.addEventListener('click', () => {
+                stopBtn.disabled = true;
+                leaveChannel();
+            });
+
+            window.addEventListener('beforeunload', () => {
+                if (isConnected) leaveChannel();
+            });
+        }
+    </script>
+</body>
+</html>

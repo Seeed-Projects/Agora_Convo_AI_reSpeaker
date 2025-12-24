@@ -11,7 +11,7 @@ A real-time conversational AI assistant powered by Agora, with RAG (Retrieval-Au
 - 🎙️ **Real-time Voice Conversation** - Talk naturally with AI assistant
 - 🤖 **RAG-Powered Responses** - Custom knowledge base for accurate answers
 - 🎭 **Emotion Detection** - AI responses include emotional context
-- 💡 **LED Visualization** - ReSpeaker lights up with emotion colors
+- 💡 **LED Visualization** - reSpeaker lights up with emotion colors
 - 📝 **Live Transcripts** - Real-time conversation transcription
 - 🌐 **Web Interface** - Beautiful, animated UI
 - 🔊 **Voice Synthesis** - Natural-sounding TTS responses
@@ -305,7 +305,7 @@ curl http://localhost:8000/health
 
 ### 6. Setup LED Control (Optional)
 
-Only needed if you have a ReSpeaker USB Microphone.
+Only needed if you have a reSpeaker USB Microphone.
 
 #### Step 6.1: Install USB Libraries
 
@@ -379,7 +379,7 @@ python emotion_led_service.py
 
 Wait for:
 ```
-✅ ReSpeaker device found!
+✅ reSpeaker device found!
 ✅ Device initialized in DoA mode
 🌐 Service running on http://localhost:5000
 ```
@@ -435,7 +435,7 @@ python -m http.server 8080
    - 🤖 AI responds with emotion
    - 📝 Transcripts appear in left panel
    - 🎭 Emoji displays at top
-   - 💡 ReSpeaker LEDs light up (if connected)
+   - 💡 reSpeaker LEDs light up (if connected)
 
 ### Stopping the Application
 
@@ -522,7 +522,7 @@ curl http://localhost:5000/test/yellow
 
 ### Issue: "Device Not Found"
 
-**ReSpeaker LED**:
+**reSpeaker LED**:
 ```bash
 # Check device connection
 lsusb | grep 2886  # Linux/Mac
@@ -591,7 +591,7 @@ kill -9 <PID>
 
 ### Issue: "LED Not Responding"
 
-1. Unplug and replug ReSpeaker
+1. Unplug and replug reSpeaker
 2. Restart LED service
 3. Manual reset:
    ```bash
@@ -722,7 +722,7 @@ This project is licensed under the MIT License.
 - [Groq](https://groq.com/) - Fast LLM inference
 - [AssemblyAI](https://www.assemblyai.com/) - Speech recognition
 - [FastAPI](https://fastapi.tiangolo.com/) - Web framework
-- [ReSpeaker](https://www.seeedstudio.com/) - Smart microphone
+- [reSpeaker](https://www.seeedstudio.com/) - Smart microphone
 
 ---
 

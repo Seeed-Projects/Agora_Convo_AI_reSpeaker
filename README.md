@@ -602,6 +602,8 @@ kill -9 <PID>
 
 ---
 
+![Demo Image](img/img_debug.png)
+
 ## 🎨 Emotion Color Reference
 
 | Emotion | Color | Hex | Use Case |

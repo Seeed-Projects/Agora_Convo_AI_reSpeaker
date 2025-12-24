@@ -16,7 +16,7 @@ A real-time conversational AI assistant powered by Agora, with RAG (Retrieval-Au
 - 🌐 **Web Interface** - Beautiful, animated UI
 - 🔊 **Voice Synthesis** - Natural-sounding TTS responses
 
-![Demo Image](img/demo.png)
+![Demo Image](img/img_v1.png)
 
 ## 📋 Table of Contents
 
